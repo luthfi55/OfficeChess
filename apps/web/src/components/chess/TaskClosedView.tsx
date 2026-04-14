@@ -64,11 +64,11 @@ export default function TaskClosedView({ totalMoves, winner, onNewSession, onRes
         </div>
       </div>
 
-      {/* Metric cards + chart side by side */}
-      <div className="flex gap-3">
+      {/* Metric cards + chart — side by side di sm+, stack di mobile */}
+      <div className="flex flex-col sm:flex-row gap-3">
 
         {/* Metrics */}
-        <div className="flex flex-col gap-2 w-36 shrink-0">
+        <div className="flex flex-row sm:flex-col gap-2 sm:w-36 sm:shrink-0">
           {[
             { label: "Completion", value: `${completionRate}%`, delta: "+4.2%", up: true, icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
             { label: "Story Points", value: velocity, delta: `${totalMoves} logged`, up: true, icon: "M13 10V3L4 14h7v7l9-11h-7z" },

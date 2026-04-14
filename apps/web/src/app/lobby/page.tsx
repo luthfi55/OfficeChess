@@ -61,8 +61,8 @@ export default function LobbyPage() {
 
       <div className="flex flex-1 overflow-hidden">
 
-        {/* Sidebar */}
-        <aside className="w-52 bg-white border-r border-gray-200 flex flex-col py-3 shrink-0">
+        {/* Sidebar — hidden di mobile */}
+        <aside className="hidden md:flex w-52 bg-white border-r border-gray-200 flex-col py-3 shrink-0">
           <div className="px-3 mb-3">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Workspace</p>
             {[
@@ -125,7 +125,7 @@ export default function LobbyPage() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-3 md:p-6">
 
           {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4">
@@ -150,10 +150,10 @@ export default function LobbyPage() {
             </Link>
           </div>
 
-          <div className="flex gap-5 items-start">
+          <div className="flex flex-col md:flex-row gap-5 items-start">
 
             {/* Left — Create / Join card */}
-            <div className="flex-1 max-w-md">
+            <div className="w-full md:flex-1 md:max-w-md">
               <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
 
                 {/* Tabs */}

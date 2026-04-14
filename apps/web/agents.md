@@ -199,6 +199,23 @@ Tampilan Jira-style. **Semua statis** (tidak ada state di halaman ini).
 
 ## Progress Log Frontend
 
+### Session 5 — 2026-04-14
+
+#### ✅ Responsive Layout
+
+File: `apps/web/src/app/page.tsx`, `apps/web/src/app/lobby/page.tsx`, `apps/web/src/components/chess/Board.tsx`, `apps/web/src/components/chess/TaskClosedView.tsx`
+
+- Sidebar hidden di mobile (`hidden md:flex`) — muncul mulai breakpoint `md`
+- Right panel hidden di mobile & tablet (`hidden xl:flex`) — muncul hanya di `xl+`
+- Padding main content: `p-3 md:p-6`
+- Content area board: `flex-col xl:flex-row` (stack di bawah xl, side-by-side di xl+)
+- Board+History layout: `flex-col sm:flex-row` — stack di mobile, side-by-side di sm+
+- **boardWidth dinamis** via `ResizeObserver` pada container div — tidak lagi hardcoded 460px. Min 240, max 460. MoveHistory `maxHeight` juga mengikuti `boardWidth`
+- TaskClosedView metric cards: `flex-row sm:flex-col` — horizontal scroll di mobile, stack vertikal di sm+
+- Lobby page: Create/Join + Recent Sessions stack di mobile (`flex-col md:flex-row`)
+
+**Keputusan desain:** `ResizeObserver` dipilih daripada `window.innerWidth` + resize listener karena mengukur lebar container langsung (lebih akurat saat layout berubah karena sidebar/panel muncul/hilang).
+
 ### Session 4 — 2026-04-14
 
 #### ✅ Lobby Page UI (`/lobby`)

@@ -56,6 +56,20 @@ export default function Board() {
   const fenHistoryRef = useRef(fenHistory);
   fenHistoryRef.current = fenHistory;
 
+  // Dynamic board width — mengikuti lebar container
+  const boardContainerRef = useRef<HTMLDivElement>(null);
+  const [boardWidth, setBoardWidth] = useState(460);
+  useEffect(() => {
+    const el = boardContainerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      const w = entries[0].contentRect.width;
+      setBoardWidth(Math.min(460, Math.max(240, w)));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const isPlayerTurn = mode === "pvp" || game.turn() === "w";
 
   // Ref agar handleBestMove selalu pakai game terbaru tanpa functional updater
@@ -426,35 +440,41 @@ export default function Board() {
         />
       )}
 
-      {/* Board + Move History side by side */}
-      <div className="flex gap-3 items-stretch" style={{ display: taskClosed ? "none" : "flex" }}>
-        <div className="rounded-md overflow-hidden ring-1 ring-gray-200 shadow-sm shrink-0">
-          <Chessboard
-            position={isReviewing ? fenHistory[viewIndex] : game.fen()}
-            onSquareClick={onSquareClick}
-            onPieceDrop={onPieceDrop}
-            isDraggablePiece={() => !isReviewing && isPlayerTurn && !botThinking && !isGameOver}
-            {...(effectivePieceStyle === "letter" ? {
-              customPieces: Object.fromEntries(
-                Object.keys(PIECE_LABELS).map((piece) => [
-                  piece,
-                  (_: { squareWidth: number }) => <ChessPiece piece={piece} />,
-                ])
-              ),
-              customLightSquareStyle: { backgroundColor: "white", outline: "1px solid #E5E7EB" },
-              customDarkSquareStyle: { backgroundColor: "white", outline: "1px solid #E5E7EB" },
-            } : {
-              customLightSquareStyle: { backgroundColor: "white", outline: "1px solid #E5E7EB" },
-              customDarkSquareStyle: { backgroundColor: "white", outline: "1px solid #E5E7EB" },
-            })}
-            customSquareStyles={customSquareStyles}
-            boardWidth={460}
-            areArrowsAllowed={false}            
-          />
+      {/* Board + Move History — side by side di desktop, stack di mobile */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch" style={{ display: taskClosed ? "none" : "flex" }}>
+        {/* Board container — full width di mobile, auto di desktop */}
+        <div ref={boardContainerRef} className="w-full sm:w-auto sm:shrink-0">
+          <div className="rounded-md overflow-hidden ring-1 ring-gray-200 shadow-sm">
+            <Chessboard
+              position={isReviewing ? fenHistory[viewIndex] : game.fen()}
+              onSquareClick={onSquareClick}
+              onPieceDrop={onPieceDrop}
+              isDraggablePiece={() => !isReviewing && isPlayerTurn && !botThinking && !isGameOver}
+              {...(effectivePieceStyle === "letter" ? {
+                customPieces: Object.fromEntries(
+                  Object.keys(PIECE_LABELS).map((piece) => [
+                    piece,
+                    (_: { squareWidth: number }) => <ChessPiece piece={piece} />,
+                  ])
+                ),
+                customLightSquareStyle: { backgroundColor: "white", outline: "1px solid #E5E7EB" },
+                customDarkSquareStyle: { backgroundColor: "white", outline: "1px solid #E5E7EB" },
+              } : {
+                customLightSquareStyle: { backgroundColor: "#F0D9B5" },
+                customDarkSquareStyle: { backgroundColor: "#B58863" },
+              })}
+              customSquareStyles={customSquareStyles}
+              boardWidth={boardWidth}
+              areArrowsAllowed={false}
+            />
+          </div>
         </div>
 
-        {/* Move History panel */}
-        <div className="flex-1 rounded-md border border-gray-200 shadow-sm bg-white overflow-hidden" style={{ maxHeight: "460px" }}>
+        {/* Move History panel — tinggi mengikuti board di desktop, fixed di mobile */}
+        <div
+          className="flex-1 rounded-md border border-gray-200 shadow-sm bg-white overflow-hidden"
+          style={{ maxHeight: boardWidth }}
+        >
           <MoveHistory moves={moveHistory} />
         </div>
       </div>

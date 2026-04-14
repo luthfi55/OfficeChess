@@ -62,8 +62,8 @@ export default function Home() {
 
       <div className="flex flex-1 overflow-hidden">
 
-        {/* Sidebar */}
-        <aside className="w-52 bg-white border-r border-gray-200 flex flex-col py-3 shrink-0">
+        {/* Sidebar — hidden di mobile */}
+        <aside className="hidden md:flex w-52 bg-white border-r border-gray-200 flex-col py-3 shrink-0">
           <div className="px-3 mb-3">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Workspace</p>
             {[
@@ -117,7 +117,7 @@ export default function Home() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-3 md:p-6">
 
           {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4">
@@ -154,7 +154,7 @@ export default function Home() {
           </div>
 
           {/* Content area */}
-          <div className="flex gap-5 items-start">
+          <div className="flex flex-col xl:flex-row gap-5 items-start">
 
             {/* Board card */}
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex-1 min-w-0">
@@ -179,8 +179,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right panel */}
-            <div className="w-56 shrink-0 flex flex-col gap-3">
+            {/* Right panel — hidden di mobile/tablet, muncul di xl */}
+            <div className="hidden xl:flex w-56 shrink-0 flex-col gap-3">
 
               {/* Details */}
               <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3">
