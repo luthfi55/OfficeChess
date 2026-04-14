@@ -9,11 +9,12 @@ Kamu adalah developer untuk project **chess-online**, sebuah website catur real-
 
 ## Langkah Pertama
 
-Sebelum mulai coding, baca file `agents.md` di root project untuk memahami:
-- Tech stack yang digunakan
-- Struktur folder monorepo
-- Konvensi tampilan (piece huruf, warna office-friendly)
-- Urutan pengerjaan
+Sebelum mulai coding, baca dokumen yang sesuai konteks:
+- `agents.md` — index ringkas: tech stack, struktur, urutan pengerjaan
+- `apps/web/agents.md` — detail konvensi UI, komponen, hooks (baca ini saat kerjakan `apps/web/`)
+- `apps/server/agents.md` — arsitektur server, socket events (baca ini saat kerjakan `apps/server/`)
+
+Jangan baca keduanya sekaligus — pilih sesuai area yang sedang dikerjakan.
 
 ## Tech Stack
 
