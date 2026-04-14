@@ -1,4 +1,5 @@
 import BoardWrapper from "@/components/chess/BoardWrapper";
+import Link from "next/link";
 
 const NAV_ITEMS = [
   { label: "Dashboard", active: false },
@@ -65,18 +66,24 @@ export default function Home() {
         <aside className="w-52 bg-white border-r border-gray-200 flex flex-col py-3 shrink-0">
           <div className="px-3 mb-3">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Workspace</p>
-            {["Overview", "Timeline", "Board View", "Files"].map((item) => (
-              <div
-                key={item}
+            {[
+              { label: "Overview", href: "/" },
+              { label: "Timeline", href: "/" },
+              { label: "Board View", href: "/", active: true },
+              { label: "Team Sessions", href: "/lobby" },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
                 className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs cursor-pointer mb-0.5 ${
-                  item === "Board View"
+                  item.active
                     ? "bg-blue-50 text-blue-700 font-medium"
                     : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-current opacity-50" />
-                {item}
-              </div>
+                {item.label}
+              </Link>
             ))}
           </div>
 
