@@ -199,6 +199,26 @@ Tampilan Jira-style. **Semua statis** (tidak ada state di halaman ini).
 
 ## Progress Log Frontend
 
+### Session 4 — 2026-04-14
+
+#### ✅ Lobby Page UI (`/lobby`)
+
+File: `apps/web/src/app/lobby/page.tsx`
+
+- Halaman baru route `/lobby` — tampilan saja, belum ada koneksi socket
+- Tab "New Meeting" (Create) dan "Join Meeting" — tombol disabled dengan label "coming soon"
+- Recent Sessions: tabel riwayat dummy (placeholder)
+- "How it works" info card dengan step-by-step
+- Sidebar `page.tsx` ditambah link **Team Sessions → /lobby**
+- Layout konsisten dengan `page.tsx` (Jira-style, navbar + sidebar sama)
+
+#### ✅ Deploy & Domain
+
+- Deploy ke Vercel: `luthfisiregar.web.id` (production, branch `main`)
+- Preview env: `dev.luthfisiregar.web.id` (branch `dev`)
+- Nameserver domain dipindah dari DomaiNesia ke Vercel DNS (`ns1.vercel-dns.com`) — DNS Management DomaiNesia tidak bisa dipakai lagi setelah ini, semua DNS dikelola di Vercel dashboard
+- Update Next.js dari `15.3.0` → `16.2.3` karena Vercel deteksi security vulnerability saat deploy
+
 ### Session 2–3 — 2026-04-14
 
 - Piece style toggle (Aa / ♟)

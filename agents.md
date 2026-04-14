@@ -56,7 +56,7 @@ chess-online/
 9. ✅ Game Over Dialog
 10. ✅ TaskClosedView (fake analytics)
 11. ✅ Keyboard shortcuts
-12. [ ] Halaman lobby (CreateRoom + JoinRoom)
+12. ✅ Halaman lobby UI (`/lobby`) — tampilan saja, belum fungsional
 13. [ ] Halaman game `/game/[roomId]`
 14. [ ] SEO: sitemap, robots, meta tags
 
@@ -66,13 +66,17 @@ chess-online/
 17. [ ] Deploy ke Render / Railway
 
 ### Post-launch
-18. [ ] Deploy frontend ke Vercel
-19. [ ] Google Search Console + submit sitemap
+18. ✅ Deploy frontend ke Vercel (`luthfisiregar.web.id`)
+19. ✅ Custom domain via DomaiNesia — nameserver dipindah ke Vercel DNS
+20. ✅ Branch `dev` → `dev.luthfisiregar.web.id` (preview environment)
+21. [ ] Google Search Console + submit sitemap
 
 ---
 
 ## Info Penting
 
+- **Production**: `https://luthfisiregar.web.id`
+- **Preview (dev branch)**: `https://dev.luthfisiregar.web.id`
 - **GitHub**: `https://github.com/luthfi55/OfficeChess.git`
 - **Cara jalankan**: `pnpm dev` (FE + BE) atau `pnpm --filter web dev` (FE saja)
 - **Stockfish** tidak di-commit (107MB). Setelah clone:
