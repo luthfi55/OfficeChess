@@ -347,7 +347,7 @@ export default function Board() {
       )}
 
       {/* Status + controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-y-2">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded-full flex items-center justify-center text-white shrink-0"

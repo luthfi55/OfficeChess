@@ -33,7 +33,7 @@ export default function LobbyPage() {
             </div>
             <span className="text-sm font-semibold text-gray-800">Jira</span>
           </div>
-          <nav className="flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1">
             {NAV_ITEMS.map((item) => (
               <span
                 key={item.label}
