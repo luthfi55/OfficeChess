@@ -51,16 +51,20 @@
 ```
 apps/web/src/
 ├── app/
-│   ├── page.tsx              → Layout Jira + embed BoardWrapper
-│   ├── layout.tsx            → Meta SEO global
-│   ├── globals.css           → @import "tailwindcss"
-│   └── game/[roomId]/page.tsx → (planned) Multiplayer game page
+│   ├── page.tsx                    → Lobby (halaman awal, Team Sessions)
+│   ├── offline-session/page.tsx    → Chessboard offline (Jira-style)
+│   ├── game/[roomId]/page.tsx      → Multiplayer game (meeting room style, dark)
+│   ├── layout.tsx                  → Meta SEO + ThemeProvider + FOUC script
+│   └── globals.css                 → @import "tailwindcss" + @variant dark
 │
 ├── components/chess/
 │   ├── Board.tsx             → Komponen utama (semua state game)
 │   ├── BoardWrapper.tsx      → SSR wrapper (dynamic import, ssr: false)
 │   ├── MoveHistory.tsx       → Activity Log panel
 │   └── TaskClosedView.tsx    → Fake analytics saat resign
+│
+├── context/
+│   └── ThemeContext.tsx      → Dark/light theme, localStorage persist
 │
 └── hooks/
     └── useStockfish.ts       → Stockfish 18 UCI Web Worker wrapper
@@ -198,6 +202,43 @@ Tampilan Jira-style. **Semua statis** (tidak ada state di halaman ini).
 ---
 
 ## Progress Log Frontend
+
+### Session 7 — 2026-04-15
+
+#### ✅ Route Swap: Lobby jadi halaman awal
+
+File: `apps/web/src/app/page.tsx`, `apps/web/src/app/offline-session/page.tsx`
+
+- `/` sekarang adalah Lobby (Team Sessions), `/offline-session` adalah chessboard
+- Folder `lobby/` dihapus, kontennya dipindah ke root `page.tsx`
+- Semua link internal diupdate konsisten (Back to Board → `/offline-session`, Team Sessions → `/`)
+
+#### ✅ Halaman game `/game/[roomId]` — Frontend multiplayer
+
+File: `apps/web/src/app/game/[roomId]/page.tsx`
+
+- Tampilan **meeting room** (dark/light theme) — sengaja beda total dari Jira-style offline
+- Simulasi koneksi: `connecting` (0.9s) → `waiting` (1.3s) → `ready` (mock, belum socket)
+- Warna dikontrol via `c` object (`Colors` type) berisi `bg, surface, border, text, textMuted, textFaint, ctrl` — sehingga mudah diswap saat tema berubah
+- `ParticipantTile` menerima `c` sebagai prop karena berada di luar komponen utama
+- Tombol "Create Session" di lobby generate ID random `MEET-Q2-XX` → redirect ke `/game/[id]`
+- Tombol "Join Session" aktif jika Meeting ID diisi → redirect ke `/game/[id]`
+- Tab "Offline" di lobby → `/offline-session`
+
+#### ✅ Dark Mode Global
+
+File: `apps/web/src/context/ThemeContext.tsx`, `apps/web/src/app/layout.tsx`, `apps/web/src/app/globals.css`
+
+- `ThemeContext` — simpan `theme: "light" | "dark"`, persist ke `localStorage`, apply `.dark` class ke `<html>`
+- `layout.tsx` — inline script di `<head>` untuk baca localStorage sebelum React hydrate → cegah FOUC (flash of wrong theme)
+- `globals.css` — tambah `@variant dark (&:is(.dark, .dark *))` untuk aktifkan `dark:` Tailwind v4
+- Toggle di semua halaman: **segmented control** (Light / Dark) bukan slide toggle — konsisten dengan gaya kontrol di Board.tsx
+  - Lobby: di sidebar section "Preferences"
+  - Offline-session: di sidebar section "Preferences"  
+  - Game page: di bottom control bar (icon-only, `hidden sm:flex`)
+- `offline-session/page.tsx` harus `"use client"` karena pakai `useTheme` — sempat error karena hook dipanggil di luar komponen
+
+**Gotcha**: `offline-session/page.tsx` adalah Server Component by default karena tidak ada `"use client"`. Setelah tambah `useTheme`, wajib tambah directive dan pindah hook ke dalam komponen.
 
 ### Session 6 — 2026-04-15
 

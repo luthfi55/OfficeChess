@@ -56,9 +56,10 @@ chess-online/
 9. ✅ Game Over Dialog
 10. ✅ TaskClosedView (fake analytics)
 11. ✅ Keyboard shortcuts
-12. ✅ Halaman lobby UI (`/lobby`) — tampilan saja, belum fungsional
-13. [ ] Halaman game `/game/[roomId]`
-14. [ ] SEO: sitemap, robots, meta tags
+12. ✅ Halaman lobby UI — route diswap: lobby → `/`, chessboard → `/offline-session`
+13. ✅ Halaman game `/game/[roomId]` — frontend multiplayer (mock, belum socket)
+14. ✅ Dark mode global (ThemeContext + toggle di sidebar lobby & offline-session & game)
+15. [ ] SEO: sitemap, robots, meta tags
 
 ### Backend
 15. [ ] GameState + RoomManager
