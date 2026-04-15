@@ -56,18 +56,21 @@ export default function Board() {
   const fenHistoryRef = useRef(fenHistory);
   fenHistoryRef.current = fenHistory;
 
-  // Dynamic board width — mengikuti lebar container
+  // Dynamic board width — pakai getBoundingClientRect setelah layout settled
   const boardContainerRef = useRef<HTMLDivElement>(null);
   const [boardWidth, setBoardWidth] = useState(460);
   useEffect(() => {
-    const el = boardContainerRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      const w = entries[0].contentRect.width;
-      setBoardWidth(Math.min(460, Math.max(240, w)));
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
+    const measure = () => {
+      const el = boardContainerRef.current;
+      if (!el) return;
+      const w = el.getBoundingClientRect().width;
+      if (w > 0) setBoardWidth(Math.min(460, Math.max(240, Math.floor(w))));
+    };
+    // Double RAF: tunggu layout + paint selesai
+    const id = requestAnimationFrame(() => requestAnimationFrame(measure));
+    const ro = new ResizeObserver(measure);
+    if (boardContainerRef.current) ro.observe(boardContainerRef.current);
+    return () => { cancelAnimationFrame(id); ro.disconnect(); };
   }, []);
 
   const isPlayerTurn = mode === "pvp" || game.turn() === "w";
@@ -250,7 +253,7 @@ export default function Board() {
   const isPlayerWinner = gameOverWinner === "Luthfi";
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 min-w-0 overflow-hidden w-full">
 
       {/* Game Over Dialog */}
       {gameOverDialog && gameOverType && (
@@ -386,8 +389,8 @@ export default function Board() {
             </button>
           </div>
 
-          {/* Piece style toggle */}
-          <div className="flex rounded-md border border-gray-200 overflow-hidden text-xs">
+          {/* Piece style toggle — hidden di mobile */}
+          <div className="hidden sm:flex rounded-md border border-gray-200 overflow-hidden text-xs">
             <button
               onClick={() => setPieceStyle("letter")}
               className={`px-2.5 py-1 transition-colors ${pieceStyle === "letter" ? "bg-gray-800 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
@@ -419,7 +422,7 @@ export default function Board() {
             </select>
           )}
 
-          <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+          <span className={`hidden sm:inline text-xs px-2.5 py-1 rounded-full font-medium ${
             isGameOver ? "bg-gray-100 text-gray-500"
             : botThinking ? "bg-blue-50 text-blue-600 ring-1 ring-blue-200"
             : isCheck ? "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
@@ -443,9 +446,9 @@ export default function Board() {
       {/* Board + Move History — side by side di desktop, stack di mobile */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch" style={{ display: taskClosed ? "none" : "flex" }}>
         {/* Board container — full width di mobile, auto di desktop */}
-        <div ref={boardContainerRef} className="w-full sm:w-auto sm:shrink-0">
+        <div ref={boardContainerRef} className="w-full min-w-0 sm:w-auto sm:shrink-0">
           <div className="rounded-md overflow-hidden ring-1 ring-gray-200 shadow-sm">
-            <Chessboard
+            {boardWidth > 0 && <Chessboard
               position={isReviewing ? fenHistory[viewIndex] : game.fen()}
               onSquareClick={onSquareClick}
               onPieceDrop={onPieceDrop}
@@ -466,7 +469,7 @@ export default function Board() {
               customSquareStyles={customSquareStyles}
               boardWidth={boardWidth}
               areArrowsAllowed={false}
-            />
+            />}
           </div>
         </div>
 

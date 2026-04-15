@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @source "../../src/**/*.{js,ts,jsx,tsx}";
 
+@variant dark (&:is(.dark, .dark *));
+
 html, body {
   overflow-x: hidden;
   max-width: 100vw;

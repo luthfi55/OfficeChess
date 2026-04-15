@@ -199,6 +199,21 @@ Tampilan Jira-style. **Semua statis** (tidak ada state di halaman ini).
 
 ## Progress Log Frontend
 
+### Session 6 — 2026-04-15
+
+#### ✅ Responsive Fix — Board overflow di mobile
+
+File: `apps/web/src/components/chess/Board.tsx`, `apps/web/src/app/globals.css`
+
+- **Root cause**: controls bar kanan (mode toggle + piece toggle + level dropdown + status badge) totalnya ~400px → lebih lebar dari viewport mobile 360-375px → menyebabkan layout melar → board container ikut melar
+- **Fix controls**: piece style toggle (`hidden sm:flex`) dan status badge (`hidden sm:inline`) disembunyikan di mobile agar controls muat
+- **Fix board width measurement**: ganti `ResizeObserver entries.contentRect.width` → `getBoundingClientRect().width` + double `requestAnimationFrame` — pastikan layout sudah settled sebelum diukur (ResizeObserver bisa fire sebelum paint)
+- **Fix container constraint**: Board root div ditambah `min-w-0 overflow-hidden w-full`, board container ditambah `min-w-0` — mencegah flex child melar melewati parent
+- **globals.css**: tambah `overflow-x: hidden; max-width: 100vw` pada `html, body`
+- **Stockfish di Vercel**: file WASM tidak di-commit (di `.gitignore`). Fix dengan `prebuild` script (`scripts/copy-stockfish.js`) yang copy dari `node_modules` sebelum build. Tambah `stockfish` ke `pnpm.onlyBuiltDependencies` di root `package.json`
+
+**Gotcha**: `ResizeObserver` bisa fire sebelum browser selesai layout pass — pakai double `requestAnimationFrame` untuk hasil yang reliable di mobile.
+
 ### Session 5 — 2026-04-14
 
 #### ✅ Responsive Layout
@@ -207,14 +222,8 @@ File: `apps/web/src/app/page.tsx`, `apps/web/src/app/lobby/page.tsx`, `apps/web/
 
 - Sidebar hidden di mobile (`hidden md:flex`) — muncul mulai breakpoint `md`
 - Right panel hidden di mobile & tablet (`hidden xl:flex`) — muncul hanya di `xl+`
-- Padding main content: `p-3 md:p-6`
-- Content area board: `flex-col xl:flex-row` (stack di bawah xl, side-by-side di xl+)
-- Board+History layout: `flex-col sm:flex-row` — stack di mobile, side-by-side di sm+
-- **boardWidth dinamis** via `ResizeObserver` pada container div — tidak lagi hardcoded 460px. Min 240, max 460. MoveHistory `maxHeight` juga mengikuti `boardWidth`
-- TaskClosedView metric cards: `flex-row sm:flex-col` — horizontal scroll di mobile, stack vertikal di sm+
-- Lobby page: Create/Join + Recent Sessions stack di mobile (`flex-col md:flex-row`)
-
-**Keputusan desain:** `ResizeObserver` dipilih daripada `window.innerWidth` + resize listener karena mengukur lebar container langsung (lebih akurat saat layout berubah karena sidebar/panel muncul/hilang).
+- Board+History layout: `flex-col sm:flex-row`, boardWidth via `ResizeObserver`
+- TaskClosedView metric cards: `flex-row sm:flex-col`
 
 ### Session 4 — 2026-04-14
 
