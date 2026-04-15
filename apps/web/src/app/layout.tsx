@@ -3,8 +3,11 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 
 export const metadata: Metadata = {
-  title: "WorkBoard — Project Management",
+  title: "OfficeChess — Project Management",
   description: "Collaborative project management and task tracking platform.",
+  icons: {
+    icon: " /icons/LS.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
