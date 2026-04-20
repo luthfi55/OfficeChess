@@ -1,5 +1,7 @@
 "use client";
 
+import { useTheme } from "@/context/ThemeContext";
+
 interface TaskClosedViewProps {
   totalMoves: number;
   winner: "Luthfi" | "Jordan" | "Draw" | null;
@@ -16,6 +18,9 @@ function generateChartData(seed: number) {
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export default function TaskClosedView({ totalMoves, winner, onNewSession, onResume }: TaskClosedViewProps) {
+  const { theme } = useTheme();
+  const dark = theme === "dark";
+
   const chartData = generateChartData(totalMoves);
   const maxVal = Math.max(...chartData);
   const chartH = 80;
@@ -27,19 +32,24 @@ export default function TaskClosedView({ totalMoves, winner, onNewSession, onRes
   const velocity = Math.round(totalMoves * 1.4);
   const resolved = Math.round(totalMoves * 0.7);
 
+  const gridLineColor = dark ? "#374151" : "#F3F4F6";
+  const barHighlight = dark ? "#D1D5DB" : "#374151";
+  const barNormal = dark ? "#4B5563" : "#E5E7EB";
+  const monthLabel = dark ? "#6B7280" : "#9CA3AF";
+
   return (
     <div className="space-y-3">
 
       {/* Status banner + actions dalam satu baris */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-lg border border-gray-200">
-        <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
-          <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
+          <svg className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-gray-700">Task Closed</p>
-          <p className="text-xs text-gray-400 truncate">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">Task Closed</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
             {winner === "Draw"
               ? "Marked as resolved by both parties"
               : winner
@@ -51,7 +61,7 @@ export default function TaskClosedView({ totalMoves, winner, onNewSession, onRes
         <div className="flex gap-2 shrink-0">
           <button
             onClick={onResume}
-            className="text-xs px-3 py-1.5 rounded-md bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors font-medium"
+            className="text-xs px-3 py-1.5 rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium"
           >
             Resume
           </button>
@@ -76,19 +86,19 @@ export default function TaskClosedView({ totalMoves, winner, onNewSession, onRes
           ].map((m) => (
             <div
               key={m.label}
-              className="group bg-white rounded-lg border border-gray-200 px-3 py-2.5 cursor-default transition-all duration-150 hover:border-blue-200 hover:shadow-sm hover:bg-blue-50/30"
+              className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-2.5 cursor-default transition-all duration-150 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-gray-400 group-hover:text-gray-500 transition-colors">{m.label}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors">{m.label}</p>
                 <svg
-                  className="w-3 h-3 text-gray-300 group-hover:text-blue-400 transition-colors"
+                  className="w-3 h-3 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors"
                   fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={m.icon} />
                 </svg>
               </div>
-              <p className="text-base font-bold text-gray-800 group-hover:text-gray-900 leading-tight">{m.value}</p>
-              <p className={`text-xs mt-0.5 transition-colors ${m.up === true ? "text-emerald-600 group-hover:text-emerald-700" : "text-gray-400 group-hover:text-gray-500"}`}>
+              <p className="text-base font-bold text-gray-800 dark:text-gray-100 group-hover:text-gray-900 dark:group-hover:text-white leading-tight">{m.value}</p>
+              <p className={`text-xs mt-0.5 transition-colors ${m.up === true ? "text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400"}`}>
                 {m.up === true && <span className="mr-0.5">↑</span>}{m.delta}
               </p>
             </div>
@@ -98,15 +108,15 @@ export default function TaskClosedView({ totalMoves, winner, onNewSession, onRes
         {/* Chart + summary */}
         <div className="flex-1 flex flex-col gap-2">
           {/* Bar chart */}
-          <div className="bg-white rounded-lg border border-gray-200 px-3 py-2 flex-1">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-2 flex-1">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-semibold text-gray-600">Sprint Velocity</p>
-              <span className="text-xs text-blue-500">Q2 2026</span>
+              <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">Sprint Velocity</p>
+              <span className="text-xs text-gray-400 dark:text-gray-500">Q2 2026</span>
             </div>
             <svg width="100%" viewBox={`0 0 ${totalW} ${chartH + 20}`} preserveAspectRatio="xMidYMid meet">
               {[0, 50, 100].map((pct) => (
                 <line key={pct} x1={0} y1={chartH - (pct / 100) * chartH} x2={totalW} y2={chartH - (pct / 100) * chartH}
-                  stroke="#F3F4F6" strokeWidth={1} />
+                  stroke={gridLineColor} strokeWidth={1} />
               ))}
               {chartData.map((val, i) => {
                 const x = i * (barW + gap);
@@ -115,8 +125,8 @@ export default function TaskClosedView({ totalMoves, winner, onNewSession, onRes
                 const isHighlight = i === 3;
                 return (
                   <g key={i}>
-                    <rect x={x} y={y} width={barW} height={h} fill={isHighlight ? "#3B82F6" : "#E5E7EB"} rx={2} />
-                    <text x={x + barW / 2} y={chartH + 14} textAnchor="middle" fontSize={8} fill="#9CA3AF">{MONTHS[i]}</text>
+                    <rect x={x} y={y} width={barW} height={h} fill={isHighlight ? barHighlight : barNormal} rx={2} />
+                    <text x={x + barW / 2} y={chartH + 14} textAnchor="middle" fontSize={8} fill={monthLabel}>{MONTHS[i]}</text>
                   </g>
                 );
               })}
@@ -124,7 +134,7 @@ export default function TaskClosedView({ totalMoves, winner, onNewSession, onRes
           </div>
 
           {/* Summary table compact */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
             {[
               { label: "Assigned", value: "Luthfi, Jordan", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" },
               { label: "Sprint", value: "Q2 Week 3", icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
@@ -133,15 +143,15 @@ export default function TaskClosedView({ totalMoves, winner, onNewSession, onRes
             ].map((row, i, arr) => (
               <div
                 key={row.label}
-                className={`group flex items-center justify-between px-3 py-2 cursor-default transition-colors duration-100 hover:bg-gray-50 ${i < arr.length - 1 ? "border-b border-gray-100" : ""}`}
+                className={`group flex items-center justify-between px-3 py-2 cursor-default transition-colors duration-100 hover:bg-gray-50 dark:hover:bg-gray-700 ${i < arr.length - 1 ? "border-b border-gray-100 dark:border-gray-700" : ""}`}
               >
                 <div className="flex items-center gap-1.5">
-                  <svg className="w-3 h-3 text-gray-300 group-hover:text-gray-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={row.icon} />
                   </svg>
-                  <span className="text-xs text-gray-400 group-hover:text-gray-500 transition-colors">{row.label}</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors">{row.label}</span>
                 </div>
-                <span className="text-xs font-medium text-gray-700 group-hover:text-gray-900 transition-colors">{row.value}</span>
+                <span className="text-xs font-medium text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{row.value}</span>
               </div>
             ))}
           </div>

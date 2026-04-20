@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import dynamic from "next/dynamic";
+import MoveHistory from "@/components/chess/MoveHistory";
 
 const BoardWrapper = dynamic(() => import("@/components/chess/BoardWrapper"), { ssr: false });
 
@@ -15,8 +16,8 @@ type Colors = {
 };
 
 const MOCK_PARTICIPANTS = [
-  { id: "host", name: "Luthfi", initials: "LF", color: "#6366F1", isHost: true, isYou: true },
-  { id: "guest", name: "Jordan", initials: "JD", color: "#0EA5E9", isHost: false, isYou: false },
+  { id: "host", name: "Luthfi", initials: "LF", color: "#9CA3AF", isHost: true, isYou: true },
+  { id: "guest", name: "Jordan", initials: "JD", color: "#D1D5DB", isHost: false, isYou: false },
 ];
 
 function useSessionTimer() {
@@ -52,7 +53,7 @@ function ParticipantTile({
         {isActive && (
           <span
             className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
-            style={{ backgroundColor: "#22C55E", borderColor: c.surface }}
+            style={{ backgroundColor: "#9CA3AF", borderColor: c.surface }}
           />
         )}
       </div>
@@ -81,11 +82,7 @@ export default function GamePage() {
   const [status, setStatus] = useState<ConnectionStatus>("connecting");
   const [isMuted, setIsMuted] = useState(false);
   const [showActivity, setShowActivity] = useState(true);
-  const [activityLog] = useState([
-    { time: "just now", text: "Luthfi joined the session" },
-    { time: "0:04", text: "Session started" },
-    { time: "0:00", text: "Meeting room opened" },
-  ]);
+  const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const timer = useSessionTimer();
 
   useEffect(() => {
@@ -108,7 +105,7 @@ export default function GamePage() {
       >
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: status === "ready" ? "#22C55E" : "#F59E0B" }} />
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: status === "ready" ? "#9CA3AF" : "#D1D5DB" }} />
             <span className="text-xs font-mono font-medium" style={{ color: c.textMuted }}>{roomId}</span>
           </div>
           <div className="hidden sm:block h-4 w-px" style={{ backgroundColor: c.border }} />
@@ -128,18 +125,18 @@ export default function GamePage() {
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: "#6366F1", fontSize: "8px", fontWeight: 700 }}>LF</div>
+            <div className="w-5 h-5 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: "#9CA3AF", fontSize: "8px", fontWeight: 700 }}>LF</div>
             {guestJoined && (
-              <div className="w-5 h-5 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: "#0EA5E9", fontSize: "8px", fontWeight: 700 }}>JD</div>
+              <div className="w-5 h-5 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: "#D1D5DB", fontSize: "8px", fontWeight: 700, color: "#374151" }}>JD</div>
             )}
             <span className="text-xs ml-1" style={{ color: c.textFaint }}>{guestJoined ? "2" : "1"}/2</span>
           </div>
           <button
             onClick={() => router.push("/")}
             className="text-xs px-3 py-1.5 rounded font-medium transition-colors"
-            style={{ backgroundColor: "#DC2626", color: "white" }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#B91C1C")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#DC2626")}
+            style={{ backgroundColor: "transparent", color: "inherit", border: "1px solid #D1D5DB" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#F9FAFB"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent"; }}
           >
             Leave
           </button>
@@ -155,7 +152,7 @@ export default function GamePage() {
             <div className="w-full max-w-md mb-4 px-4 py-3 rounded-lg flex items-center gap-3"
               style={{ backgroundColor: c.surface, border: `1px solid ${c.border}` }}>
               <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                style={{ borderColor: "#6366F1", borderTopColor: "transparent" }} />
+                style={{ borderColor: "#6B7280", borderTopColor: "transparent" }} />
               <span className="text-xs" style={{ color: c.textMuted }}>Connecting to session...</span>
             </div>
           )}
@@ -164,7 +161,7 @@ export default function GamePage() {
             <div className="w-full max-w-md mb-4 px-4 py-3 rounded-lg flex items-center gap-3"
               style={{ backgroundColor: c.surface, border: `1px solid ${c.border}` }}>
               <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                style={{ borderColor: "#F59E0B", borderTopColor: "transparent" }} />
+                style={{ borderColor: "#9CA3AF", borderTopColor: "transparent" }} />
               <div>
                 <p className="text-xs font-medium" style={{ color: c.text }}>Waiting for participant</p>
                 <p className="text-xs" style={{ color: c.textFaint }}>Share the Meeting ID to invite someone</p>
@@ -189,11 +186,11 @@ export default function GamePage() {
               <div className="flex items-center gap-2.5">
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-white relative"
-                  style={{ backgroundColor: guestJoined ? "#0EA5E9" : c.border, fontSize: "9px", fontWeight: 700 }}
+                  style={{ backgroundColor: guestJoined ? "#6B7280" : c.border, fontSize: "9px", fontWeight: 700 }}
                 >
                   {guestJoined ? "JD" : "?"}
                   {guestJoined && (
-                    <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-400" style={{ border: `1px solid ${c.surface}` }} />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-gray-400" style={{ border: `1px solid ${c.surface}` }} />
                   )}
                 </div>
                 <span className="text-xs font-medium" style={{ color: guestJoined ? c.text : c.textFaint }}>
@@ -204,8 +201,8 @@ export default function GamePage() {
             </div>
 
             {/* Board */}
-            <div style={{ backgroundColor: c.bg }}>
-              <BoardWrapper />
+            <div style={{ backgroundColor: c.bg }} className="p-3">
+              <BoardWrapper hideMoveHistory onMovesChange={setMoveHistory} />
             </div>
 
             {/* You */}
@@ -216,10 +213,10 @@ export default function GamePage() {
               <div className="flex items-center gap-2.5">
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-white relative"
-                  style={{ backgroundColor: "#6366F1", fontSize: "9px", fontWeight: 700 }}
+                  style={{ backgroundColor: "#9CA3AF", fontSize: "9px", fontWeight: 700 }}
                 >
                   LF
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-400" style={{ border: `1px solid ${c.surface}` }} />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-gray-400" style={{ border: `1px solid ${c.surface}` }} />
                 </div>
                 <span className="text-xs font-medium" style={{ color: c.text }}>
                   Luthfi <span style={{ color: c.textFaint, fontWeight: 400 }}>(you)</span>
@@ -260,16 +257,8 @@ export default function GamePage() {
 
             <div style={{ borderTop: `1px solid ${c.border}`, margin: "4px 0" }} />
 
-            <div className="flex items-center justify-between px-4 py-3 shrink-0" style={{ borderBottom: `1px solid ${c.border}` }}>
-              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: c.textFaint }}>Activity</span>
-            </div>
-            <div className="flex-1 overflow-auto p-3 space-y-3">
-              {activityLog.map((entry, i) => (
-                <div key={i} className="flex gap-2">
-                  <span className="text-xs font-mono shrink-0 mt-0.5" style={{ color: c.textFaint, fontSize: "10px" }}>{entry.time}</span>
-                  <p className="text-xs leading-snug" style={{ color: c.textMuted }}>{entry.text}</p>
-                </div>
-              ))}
+            <div className="flex-1 overflow-hidden">
+              <MoveHistory moves={moveHistory} />
             </div>
 
             <div className="p-3 shrink-0" style={{ borderTop: `1px solid ${c.border}` }}>
@@ -296,7 +285,7 @@ export default function GamePage() {
           <button
             onClick={() => setIsMuted((m) => !m)}
             className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md transition-colors"
-            style={{ backgroundColor: isMuted ? "#DC2626" : c.ctrl, color: isMuted ? "white" : c.text }}
+            style={{ backgroundColor: isMuted ? c.border : c.ctrl, color: c.text, outline: isMuted ? `2px solid ${c.textMuted}` : "none", outlineOffset: "-2px" }}
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMuted
@@ -353,7 +342,7 @@ export default function GamePage() {
         <div className="text-xs text-center" style={{ color: c.textFaint }}>
           {status === "connecting" && "Connecting..."}
           {status === "waiting" && "Waiting for opponent"}
-          {status === "ready" && <span style={{ color: "#22C55E" }}>Session active · {timer}</span>}
+          {status === "ready" && <span style={{ color: c.textMuted }}>Session active · {timer}</span>}
         </div>
 
         <button

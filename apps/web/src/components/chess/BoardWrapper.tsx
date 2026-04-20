@@ -11,17 +11,19 @@ const LOADING = (
   </div>
 );
 
-export default function BoardWrapper() {
+interface BoardWrapperProps {
+  hideMoveHistory?: boolean;
+  onMovesChange?: (moves: string[]) => void;
+}
+
+export default function BoardWrapper({ hideMoveHistory, onMovesChange }: BoardWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Server + client initial render keduanya return LOADING
-  // sehingga HTML cocok dan tidak ada hydration mismatch.
-  // Setelah hydration selesai, Board dimuat via dynamic import.
   if (!mounted) return LOADING;
 
-  return <Board />;
+  return <Board hideMoveHistory={hideMoveHistory} onMovesChange={onMovesChange} />;
 }
