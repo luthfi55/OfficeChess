@@ -308,7 +308,7 @@ export default function GamePage() {
           </button>
 
           {/* Theme toggle */}
-          <div className="hidden sm:flex rounded-md overflow-hidden text-xs" style={{ border: `1px solid ${c.border}` }}>
+          <div className="flex rounded-md overflow-hidden text-xs" style={{ border: `1px solid ${c.border}` }}>
             <button
               onClick={() => theme === "dark" && toggleTheme()}
               className="flex items-center justify-center px-2.5 py-1.5 transition-colors"
