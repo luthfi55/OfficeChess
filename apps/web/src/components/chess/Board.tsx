@@ -500,11 +500,66 @@ export default function Board({ hideMoveHistory = false, onMovesChange }: BoardP
         )}
       </div>
 
-      {/* Review mode indicator */}
-      {isReviewing && !taskClosed && (
-        <div className="flex items-center justify-center gap-2 py-1 px-3 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs">
-          <span>Reviewing move {viewIndex} of {fenHistory.length - 1}</span>
-          <span className="text-gray-400 dark:text-gray-500">— ← → to navigate, → to return to live</span>
+      {/* Navigation bar — undo/redo */}
+      {!taskClosed && (
+        <div className={`flex items-center justify-center gap-1${hideMoveHistory ? " pt-2" : ""}`}>
+          {/* First */}
+          <button
+            onClick={() => setViewIndex(0)}
+            disabled={viewIndex === 0}
+            className="flex items-center justify-center w-8 h-8 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            title="First move"
+          >
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
+            </svg>
+          </button>
+
+          {/* Prev */}
+          <button
+            onClick={() => setViewIndex((i) => Math.max(0, i - 1))}
+            disabled={viewIndex === 0}
+            className="flex items-center justify-center w-8 h-8 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            title="Previous move (←)"
+          >
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+          </button>
+
+          {/* Position indicator */}
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 min-w-[80px] justify-center">
+            {isReviewing && (
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+            )}
+            <span className="text-xs font-mono text-gray-600 dark:text-gray-300">
+              {viewIndex === fenHistory.length - 1 ? "Live" : `${viewIndex} / ${fenHistory.length - 1}`}
+            </span>
+          </div>
+
+          {/* Next */}
+          <button
+            onClick={() => setViewIndex((i) => Math.min(fenHistory.length - 1, i + 1))}
+            disabled={viewIndex === fenHistory.length - 1}
+            className="flex items-center justify-center w-8 h-8 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            title="Next move (→)"
+          >
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+            </svg>
+          </button>
+
+          {/* Last / Live */}
+          <button
+            onClick={() => setViewIndex(fenHistory.length - 1)}
+            disabled={viewIndex === fenHistory.length - 1}
+            className="flex items-center justify-center w-8 h-8 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            title="Live position"
+          >
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/>
+            </svg>
+          </button>
         </div>
       )}
 
