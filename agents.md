@@ -62,8 +62,8 @@ chess-online/
 15. [ ] SEO: sitemap, robots, meta tags
 
 ### Backend
-15. [ ] GameState + RoomManager
-16. [ ] Socket.io handlers (room & game)
+15. ✅ GameState + RoomManager
+16. ✅ Socket.io handlers (room & game)
 17. [ ] Deploy ke Render / Railway
 
 ### Post-launch

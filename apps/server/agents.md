@@ -6,7 +6,7 @@
 
 ## Status
 
-Backend **belum dikerjakan**. Hanya ada file placeholder.
+Backend **sudah diimplementasi** (Session 8 — 2026-04-20). Semua file aktif.
 
 ---
 
@@ -101,4 +101,24 @@ pnpm --filter server build # compile ke dist/
 
 ## Progress Log Backend
 
-*(Belum ada — backend belum dikerjakan)*
+### Session 8 — 2026-04-20
+
+#### ✅ Implementasi penuh Socket.io backend
+
+File baru:
+- `src/index.ts` — Express + HTTP server entry point
+- `src/socket/index.ts` — inisialisasi Socket.io, CORS dari `CLIENT_URL` env
+- `src/game/GameState.ts` — chess.js instance per room, validasi move di server, offer/accept draw
+- `src/game/RoomManager.ts` — `Map<roomId, GameState>` in-memory, generate ID format `MEET-XXXXXX`
+- `src/socket/handlers/roomHandler.ts` — event `room:create` (host → white) dan `room:join` (guest → black)
+- `src/socket/handlers/gameHandler.ts` — event `game:move`, `resign`, `draw-offer`, `draw-accept`, `disconnect`
+
+**Keputusan desain:**
+- Supabase Realtime ditolak karena latency 100–300ms tidak cocok untuk catur bertimer — tetap pakai Socket.io
+- Validasi giliran di server: `player.color !== game.getTurn()` → emit error, jangan proses move
+- Saat semua player disconnect → room dihapus dari Map (tidak ada persistensi)
+- `roomManager` di-instantiate sekali di `socket/index.ts` (singleton per proses server), bukan per koneksi
+
+**Gotcha:**
+- `socket.data.roomId` dipakai di `disconnect` handler untuk tahu player ada di room mana — harus di-set saat join/create
+- `generateRoomId()` rekursif jika ID tabrakan (sangat jarang tapi aman)

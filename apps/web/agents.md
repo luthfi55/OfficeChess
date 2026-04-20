@@ -53,21 +53,26 @@ apps/web/src/
 ├── app/
 │   ├── page.tsx                    → Lobby (halaman awal, Team Sessions)
 │   ├── offline-session/page.tsx    → Chessboard offline (Jira-style)
-│   ├── game/[roomId]/page.tsx      → Multiplayer game (meeting room style, dark)
+│   ├── game/[roomId]/page.tsx      → Multiplayer game (real Socket.io)
 │   ├── layout.tsx                  → Meta SEO + ThemeProvider + FOUC script
 │   └── globals.css                 → @import "tailwindcss" + @variant dark
 │
 ├── components/chess/
-│   ├── Board.tsx             → Komponen utama (semua state game)
+│   ├── Board.tsx             → Komponen utama offline (semua state game)
 │   ├── BoardWrapper.tsx      → SSR wrapper (dynamic import, ssr: false)
+│   ├── MultiplayerBoard.tsx  → Board multiplayer (FEN dari server, giliran terkunci)
 │   ├── MoveHistory.tsx       → Activity Log panel
 │   └── TaskClosedView.tsx    → Fake analytics saat resign
 │
 ├── context/
 │   └── ThemeContext.tsx      → Dark/light theme, localStorage persist
 │
-└── hooks/
-    └── useStockfish.ts       → Stockfish 18 UCI Web Worker wrapper
+├── hooks/
+│   ├── useStockfish.ts       → Stockfish 18 UCI Web Worker wrapper
+│   └── useMultiplayerGame.ts → Socket.io state untuk multiplayer (create/join/move/resign/draw)
+│
+└── lib/
+    └── socket.ts             → Singleton socket.io-client (autoConnect: false)
 ```
 
 ---
@@ -202,6 +207,33 @@ Tampilan Jira-style. **Semua statis** (tidak ada state di halaman ini).
 ---
 
 ## Progress Log Frontend
+
+### Session 8 — 2026-04-20
+
+#### ✅ Multiplayer real-time dengan Socket.io
+
+File baru:
+- `src/lib/socket.ts` — singleton `socket.io-client`, `autoConnect: false` agar tidak connect saat import
+- `src/hooks/useMultiplayerGame.ts` — manage koneksi socket + game state; param: `roomId | null`, `playerName`, `action: "create" | "join"`
+- `src/components/chess/MultiplayerBoard.tsx` — board khusus multiplayer, terima FEN + lastMove dari server sebagai props
+
+File diubah:
+- `src/app/page.tsx` — Create button → `/game/new?player=host`, Join button → `/game/MEET-XXXX?player=guest&name=...`; tambah state `joinName`
+- `src/app/game/[roomId]/page.tsx` — full rewrite: pakai `useMultiplayerGame` + `MultiplayerBoard`, hapus mock setTimeout
+
+**Alur create/join:**
+- Host: navigate ke `/game/new?player=host` → socket emit `room:create` → server return roomId nyata → `router.replace()` ke URL baru
+- Guest: navigate ke `/game/MEET-XXXX?player=guest` → socket emit `room:join`
+
+**Keputusan desain:**
+- `lastMove` di MultiplayerBoard berasal dari `room.moves.at(-1)` (server), bukan state lokal — supaya gerakan lawan juga ter-highlight
+- Warna last move highlight: `#374151` (dark) / `#F3F4F6` (light) — sama persis dengan `Board.tsx` offline
+- Board square pakai `outline` bukan `border` — `border` menambah ukuran kotak dan merusak alignment
+- Participant tile highlight di dark mode pakai `#1E3A5F` — `#EFF6FF` (light mode) tidak terbaca di dark mode karena teks putih di atas background terang
+
+**Gotcha:**
+- `MultiplayerBoard` tidak punya internal `lastMove` state — semua dari prop. Ini penting karena gerakan lawan hanya datang via FEN update dari server, bukan dari event lokal
+- `socket.ts` singleton: jika `getSocket()` dipanggil dua kali, instance yang sama dikembalikan — penting agar listener tidak double
 
 ### Session 7 — 2026-04-15
 

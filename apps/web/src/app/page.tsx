@@ -24,6 +24,7 @@ export default function LobbyPage() {
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const [meetingCode, setMeetingCode] = useState("");
+  const [joinName, setJoinName] = useState("");
   const [activeTab, setActiveTab] = useState<"create" | "join" | "offline">("create");
 
   return (
@@ -278,10 +279,7 @@ export default function LobbyPage() {
                       </div>
 
                       <button
-                        onClick={() => {
-                          const id = `MEET-Q2-${String(Math.floor(Math.random() * 90) + 10).padStart(2, "0")}`;
-                          router.push(`/game/${id}`);
-                        }}
+                        onClick={() => router.push("/game/new?player=host")}
                         className="w-full text-xs py-2.5 rounded-md bg-blue-600 dark:bg-[#1a9fff] text-white font-medium hover:bg-blue-700 dark:hover:bg-[#2980b9] transition-colors"
                       >
                         Create Session
@@ -309,6 +307,8 @@ export default function LobbyPage() {
                           <label className="text-xs font-medium text-gray-600 dark:text-[#8f98a0] block mb-1.5">Your Name</label>
                           <input
                             type="text"
+                            value={joinName}
+                            onChange={(e) => setJoinName(e.target.value)}
                             placeholder="Display name"
                             className="w-full text-xs border border-gray-200 dark:border-[#3d6b8f] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-300 dark:focus:ring-[#1a9fff] text-gray-700 dark:text-[#c6d4df] placeholder-gray-300 dark:placeholder-[#627282] bg-white dark:bg-[#2a475e]"
                           />
@@ -316,7 +316,7 @@ export default function LobbyPage() {
                       </div>
 
                       <button
-                        onClick={() => meetingCode.trim() && router.push(`/game/${meetingCode.trim()}`)}
+                        onClick={() => meetingCode.trim() && router.push(`/game/${meetingCode.trim()}?player=guest${joinName.trim() ? `&name=${encodeURIComponent(joinName.trim())}` : ""}`)}
                         disabled={!meetingCode.trim()}
                         className="w-full text-xs py-2.5 rounded-md bg-gray-800 dark:bg-[#2a475e] text-white font-medium hover:bg-gray-700 dark:hover:bg-[#3d6b8f] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
