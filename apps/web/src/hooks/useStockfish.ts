@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 
 export type BotLevel = 1 | 2 | 3 | 4 | 5;
 
@@ -21,6 +21,7 @@ export function useStockfish(
 ) {
   const workerRef = useRef<Worker | null>(null);
   const readyRef = useRef(false);
+  const [isReady, setIsReady] = useState(false);
   const pendingFenRef = useRef<string | null>(null);
   const moveStartTimeRef = useRef<number>(0);
   const onBestMoveRef = useRef(onBestMove);
@@ -39,7 +40,7 @@ export function useStockfish(
 
       if (msg === "uciok") {
         readyRef.current = true;
-        // Kalau ada pending FEN, jalankan sekarang
+        setIsReady(true);
         if (pendingFenRef.current) {
           sendGo(pendingFenRef.current);
           pendingFenRef.current = null;
@@ -94,5 +95,5 @@ export function useStockfish(
     sendGo(fen);
   }, [enabled, level]);
 
-  return { requestMove };
+  return { requestMove, isReady };
 }

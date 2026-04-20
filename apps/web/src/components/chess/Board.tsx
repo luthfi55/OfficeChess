@@ -104,7 +104,7 @@ export default function Board({ hideMoveHistory = false, onMovesChange }: BoardP
     }
   }, []);
 
-  const { requestMove } = useStockfish(level, mode === "bot", handleBestMove);
+  const { requestMove, isReady: stockfishReady } = useStockfish(level, mode === "bot", handleBestMove);
 
   // Trigger bot setiap giliran hitam di mode bot
   useEffect(() => {
@@ -253,6 +253,7 @@ export default function Board({ hideMoveHistory = false, onMovesChange }: BoardP
 
   const statusLabel = isGameOver
     ? game.isCheckmate() ? "Task Closed" : "Marked Resolved"
+    : (mode === "bot" && !stockfishReady) ? "Warming up..."
     : botThinking ? "Processing..."
     : isCheck ? "Pending Review ⚠"
     : "In Progress";

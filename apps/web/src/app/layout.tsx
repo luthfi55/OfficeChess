@@ -20,6 +20,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `(function(){var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.classList.add('dark');})()`,
           }}
         />
+        {/* Preload Stockfish agar sudah terdownload sebelum dibutuhkan */}
+        <link rel="preload" href="/stockfish/stockfish.js" as="worker" />
       </head>
       <body className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 antialiased">
         <ThemeProvider>{children}</ThemeProvider>
