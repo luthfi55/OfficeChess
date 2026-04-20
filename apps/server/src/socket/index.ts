@@ -9,9 +9,14 @@ import { registerGameHandlers } from "./handlers/gameHandler";
 const roomManager = new RoomManager();
 
 export function initSocket(httpServer: HttpServer | Http2SecureServer) {
+  const allowedOrigins = (process.env.CLIENT_URL ?? "http://localhost:3000").split(",").map((o) => o.trim());
+
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL ?? "http://localhost:3000",
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+        else callback(new Error(`CORS blocked: ${origin}`));
+      },
       methods: ["GET", "POST"],
     },
   });
